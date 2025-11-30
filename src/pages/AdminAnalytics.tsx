@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     Shield,
     MapPin,
@@ -8,7 +8,10 @@ import {
     Route,
     BarChart3,
     Eye,
-    RefreshCw
+    RefreshCw,
+    Download,
+    FileJson,
+    Filter
 } from 'lucide-react';
 import {
     getAllUsersTrips,
@@ -17,11 +20,25 @@ import {
     type UserTripData
 } from '../utils/adminAnalytics';
 import { formatCurrency } from '../utils/currency';
+import {
+    exportAnalyticsToCSV,
+    exportAnalyticsToJSON,
+    filterTripsByCountry,
+    filterTripsByCostRange,
+    sortTrips
+} from '../utils/analyticsExport';
 
 export const AdminAnalytics: React.FC = () => {
     const [allTrips, setAllTrips] = useState<UserTripData[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedTrip, setSelectedTrip] = useState<UserTripData | null>(null);
+
+    // Filter states
+    const [countryFilter, setCountryFilter] = useState('');
+    const [minCost, setMinCost] = useState<number | null>(null);
+    const [maxCost, setMaxCost] = useState<number | null>(null);
+    const [sortBy, setSortBy] = useState<'name' | 'distance' | 'cost' | 'date'>('date');
+    const [showFilters, setShowFilters] = useState(false);
 
     const loadData = async () => {
         setLoading(true);
@@ -38,6 +55,23 @@ export const AdminAnalytics: React.FC = () => {
     useEffect(() => {
         loadData();
     }, []);
+
+    // Apply filters and sorting
+    const filteredTrips = useMemo(() => {
+        let filtered = [...allTrips];
+
+        if (countryFilter) {
+            filtered = filterTripsByCountry(filtered, countryFilter);
+        }
+
+        if (minCost !== null || maxCost !== null) {
+            filtered = filterTripsByCostRange(filtered, minCost, maxCost);
+        }
+
+        filtered = sortTrips(filtered, sortBy, 'desc');
+
+        return filtered;
+    }, [allTrips, countryFilter, minCost, maxCost, sortBy]);
 
     const stats = calculateTripStatistics(allTrips);
     const popularRoutes = getPopularRoutes(allTrips);
@@ -76,6 +110,87 @@ export const AdminAnalytics: React.FC = () => {
                     <RefreshCw size={18} />
                     <span>Refresh</span>
                 </button>
+            </div>
+
+            {/* Export and Filter Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {/* Export Buttons */}
+                <div className="bg-gray-800 rounded-xl border border-gray-700 p-4">
+                    <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                        <Download size={18} className="text-green-400" />
+                        Export Data
+                    </h3>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => exportAnalyticsToCSV(filteredTrips)}
+                            className="flex-1 bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                        >
+                            <Download size={16} />
+                            CSV
+                        </button>
+                        <button
+                            onClick={() => exportAnalyticsToJSON(filteredTrips, stats)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm"
+                        >
+                            <FileJson size={16} />
+                            JSON
+                        </button>
+                    </div>
+                </div>
+
+                {/* Filter Controls */}
+                <div className="bg-gray-800 rounded-xl border border-gray-700 p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-white font-semibold flex items-center gap-2">
+                            <Filter size={18} className="text-purple-400" />
+                            Filters
+                        </h3>
+                        <button
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="text-sm text-purple-400 hover:text-purple-300"
+                        >
+                            {showFilters ? 'Hide' : 'Show'}
+                        </button>
+                    </div>
+
+                    {showFilters && (
+                        <div className="space-y-2">
+                            <input
+                                type="text"
+                                placeholder="Filter by country..."
+                                value={countryFilter}
+                                onChange={(e) => setCountryFilter(e.target.value)}
+                                className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border border-gray-600 focus:border-purple-500 outline-none"
+                            />
+                            <div className="grid grid-cols-2 gap-2">
+                                <input
+                                    type="number"
+                                    placeholder="Min cost (KWD)"
+                                    value={minCost || ''}
+                                    onChange={(e) => setMinCost(e.target.value ? Number(e.target.value) : null)}
+                                    className="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border border-gray-600 focus:border-purple-500 outline-none"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Max cost (KWD)"
+                                    value={maxCost || ''}
+                                    onChange={(e) => setMaxCost(e.target.value ? Number(e.target.value) : null)}
+                                    className="bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border border-gray-600 focus:border-purple-500 outline-none"
+                                />
+                            </div>
+                            <select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value as any)}
+                                className="w-full bg-gray-700 text-white px-3 py-2 rounded-lg text-sm border border-gray-600 focus:border-purple-500 outline-none"
+                            >
+                                <option value="date">Sort by Date</option>
+                                <option value="name">Sort by Name</option>
+                                <option value="distance">Sort by Distance</option>
+                                <option value="cost">Sort by Cost</option>
+                            </select>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {/* Admin Notice */}
