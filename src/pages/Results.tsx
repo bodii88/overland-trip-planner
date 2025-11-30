@@ -16,7 +16,7 @@ export const Results: React.FC = () => {
     const [trip, setTrip] = useState<Trip | null>(null);
     const [aiReport, setAiReport] = useState<string | null>(null);
     const [loadingAI, setLoadingAI] = useState(false);
-    const { currency } = useCurrency();
+    const { currency, exchangeRates } = useCurrency();
 
     useEffect(() => {
         const trips = storage.getTrips();
@@ -47,8 +47,8 @@ export const Results: React.FC = () => {
 
     const { results } = trip;
 
-    // Convert amounts to selected currency
-    const convertAmount = (amountInKWD: number) => convertFromKWD(amountInKWD, currency);
+    // Convert amounts to selected currency using live rates
+    const convertAmount = (amountInKWD: number) => convertFromKWD(amountInKWD, currency, exchangeRates || undefined);
 
     return (
         <div className="p-4 pb-24 lg:pb-8 max-w-7xl mx-auto">
