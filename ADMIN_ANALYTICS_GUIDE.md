@@ -8,14 +8,21 @@
 - **Filtered Exports**: Export only filtered/sorted data
 - **Automatic Naming**: Files named with current date
 
-### 2. **Advanced Filtering** ✅
+### 2. **Visual Charts** ✅
+- **Cost Distribution**: Pie chart showing Fuel vs. Accommodation vs. Food
+- **Top Countries**: Bar chart of most visited countries
+- **Trip Analysis**: Area chart comparing distance vs. cost for top trips
+- **Interactive**: Tooltips on hover for detailed data
+- **Responsive**: Adapts to screen size
+
+### 3. **Advanced Filtering** ✅
 - **Country Filter**: Search trips by country name
 - **Cost Range**: Filter by minimum and maximum cost
 - **Sort Options**: Sort by name, distance, cost, or date
 - **Real-time Updates**: Filters apply instantly
 - **Collapsible UI**: Show/hide filters to save space
 
-### 3. **Data Analysis Tools** ✅
+### 4. **Data Analysis Tools** ✅
 - **Trip Statistics**: Total trips, distance, cost, countries
 - **Averages**: Average cost and distance per trip
 - **Popular Routes**: Top 5 most common route combinations
