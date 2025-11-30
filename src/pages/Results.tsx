@@ -3,8 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import type { Trip } from '../types';
 import { storage } from '../utils/storage';
 import { analyzeTripWithGemini } from '../utils/gemini';
-import { ArrowLeft, PieChart, BarChart2, Sparkles, Loader } from 'lucide-react';
+import { ArrowLeft, PieChart, BarChart2, Sparkles, Loader, Calendar } from 'lucide-react';
 import { AIReportRenderer } from '../components/AIReportRenderer';
+import { CurrencySwitcher } from '../components/CurrencySwitcher';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { convertFromKWD, formatCurrency } from '../utils/currency';
+import { downloadICS } from '../utils/icsGenerator';
 
 export const Results: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -12,6 +16,7 @@ export const Results: React.FC = () => {
     const [trip, setTrip] = useState<Trip | null>(null);
     const [aiReport, setAiReport] = useState<string | null>(null);
     const [loadingAI, setLoadingAI] = useState(false);
+    const { currency } = useCurrency();
 
     useEffect(() => {
         const trips = storage.getTrips();
@@ -41,15 +46,30 @@ export const Results: React.FC = () => {
     if (!trip || !trip.results) return <div className="p-4 text-white">Loading...</div>;
 
     const { results } = trip;
-    const currency = 'KWD';
+
+    // Convert amounts to selected currency
+    const convertAmount = (amountInKWD: number) => convertFromKWD(amountInKWD, currency);
 
     return (
         <div className="p-4 pb-24 lg:pb-8 max-w-7xl mx-auto">
-            <div className="flex items-center gap-4 mb-6">
-                <button onClick={() => navigate(`/trip/${id}`)} className="text-gray-400 hover:text-white">
-                    <ArrowLeft size={24} />
-                </button>
-                <h1 className="text-2xl font-bold text-white truncate">Trip Budget</h1>
+            <div className="flex items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                    <button onClick={() => navigate(`/trip/${id}`)} className="text-gray-400 hover:text-white">
+                        <ArrowLeft size={24} />
+                    </button>
+                    <h1 className="text-2xl font-bold text-white truncate">Trip Budget</h1>
+                </div>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => downloadICS(trip)}
+                        className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-colors text-sm font-medium"
+                        title="Export to Calendar"
+                    >
+                        <Calendar size={18} />
+                        <span className="hidden sm:inline">Export</span>
+                    </button>
+                    <CurrencySwitcher />
+                </div>
             </div>
 
             <div className="space-y-6">
@@ -57,17 +77,17 @@ export const Results: React.FC = () => {
                 <div className="bg-gradient-to-br from-blue-900 to-blue-800 p-6 rounded-2xl shadow-lg border border-blue-700">
                     <div className="text-blue-200 text-sm font-medium mb-1">Total Estimated Cost</div>
                     <div className="text-4xl font-bold text-white mb-4">
-                        {Math.round(results.totalCostKwd).toLocaleString()} <span className="text-lg font-normal">{currency}</span>
+                        {formatCurrency(convertAmount(results.totalCostKwd), currency)}
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                         <div>
                             <div className="text-blue-300">Cost per Day</div>
-                            <div className="text-white font-semibold">{results.costPerDay?.toFixed(1)} {currency}</div>
+                            <div className="text-white font-semibold">{formatCurrency(convertAmount(results.costPerDay || 0), currency)}</div>
                         </div>
                         <div>
                             <div className="text-blue-300">Cost per km</div>
-                            <div className="text-white font-semibold">{results.costPerKm?.toFixed(3)} {currency}</div>
+                            <div className="text-white font-semibold">{convertAmount(results.costPerKm || 0).toFixed(2)} {currency}</div>
                         </div>
                         <div>
                             <div className="text-blue-300">Total Distance</div>
@@ -90,7 +110,7 @@ export const Results: React.FC = () => {
                         <div className="space-y-3">
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300">Fuel</span>
-                                <span className="text-white font-medium">{Math.round(results.totalFuelCostKwd)} {currency}</span>
+                                <span className="text-white font-medium">{formatCurrency(convertAmount(results.totalFuelCostKwd), currency)}</span>
                             </div>
                             <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
                                 <div className="bg-yellow-500 h-full" style={{ width: `${(results.totalFuelCostKwd / results.totalCostKwd) * 100}%` }} />
@@ -98,7 +118,7 @@ export const Results: React.FC = () => {
 
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300">Stays</span>
-                                <span className="text-white font-medium">{Math.round(results.totalStayCostKwd)} {currency}</span>
+                                <span className="text-white font-medium">{formatCurrency(convertAmount(results.totalStayCostKwd), currency)}</span>
                             </div>
                             <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
                                 <div className="bg-blue-500 h-full" style={{ width: `${(results.totalStayCostKwd / results.totalCostKwd) * 100}%` }} />
@@ -106,7 +126,7 @@ export const Results: React.FC = () => {
 
                             <div className="flex justify-between items-center">
                                 <span className="text-gray-300">Food</span>
-                                <span className="text-white font-medium">{Math.round(results.totalFoodCostKwd)} {currency}</span>
+                                <span className="text-white font-medium">{formatCurrency(convertAmount(results.totalFoodCostKwd), currency)}</span>
                             </div>
                             <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
                                 <div className="bg-green-500 h-full" style={{ width: `${(results.totalFoodCostKwd / results.totalCostKwd) * 100}%` }} />
