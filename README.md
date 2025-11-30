@@ -238,6 +238,7 @@ firebase deploy --only hosting
 - **[FEATURES_SUMMARY.md](./FEATURES_SUMMARY.md)** - Complete feature list
 - **[IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md)** - Technical details
 - **[CURRENCY_IMPLEMENTATION.md](./CURRENCY_IMPLEMENTATION.md)** - Currency system docs
+- **[ADMIN_ANALYTICS_GUIDE.md](./ADMIN_ANALYTICS_GUIDE.md)** - Admin dashboard guide
 
 ## 🤝 Contributing
 
