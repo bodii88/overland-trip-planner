@@ -1,73 +1,96 @@
-# React + TypeScript + Vite
+# 🚗 Overland Trip Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A comprehensive trip planning application for overland adventures with real-time cost calculations, AI-powered insights, and multi-device sync.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Trip Planning**: Plan multi-country overland trips with detailed route segments
+- **Cost Calculations**: Automatic fuel, accommodation, and food cost estimates
+- **AI Insights**: Powered by Google Gemini for trip recommendations and tips
+- **Vehicle Management**: Track multiple vehicles with fuel consumption data
+- **Real-time Sync**: Firebase-powered data synchronization across all devices
+- **Authentication**: Secure login with Email/Password and Google Sign-In
+- **Admin Panel**: Export/import data, view statistics, manage settings
+- **Responsive Design**: Beautiful UI optimized for both desktop and mobile
 
-## React Compiler
+## 🚀 Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**[https://trip-project1988.web.app](https://trip-project1988.web.app)**
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend**: React + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **Backend**: Firebase (Firestore + Authentication + Hosting)
+- **AI**: Google Gemini API
+- **Icons**: Lucide React
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 Installation
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/overland-trip-planner.git
+cd overland-trip-planner
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔧 Configuration
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable Firestore Database and Authentication (Email/Password + Google)
+3. Update `src/config/firebase.ts` with your Firebase config
+4. Get a Gemini API key from [ai.google.dev](https://ai.google.dev)
+5. Update `src/utils/gemini.ts` with your API key
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Deployment
+
+### Manual Deployment
+```bash
+npm run build
+firebase deploy --only hosting
 ```
+
+### Automatic Deployment (GitHub Actions)
+Push to the `main` branch and GitHub Actions will automatically build and deploy to Firebase Hosting.
+
+**Setup Required:**
+1. Create a Firebase service account key
+2. Add it as `FIREBASE_SERVICE_ACCOUNT` secret in GitHub repository settings
+
+## 📱 Usage
+
+1. **Sign Up/Login**: Create an account or sign in with Google
+2. **Add Vehicles**: Configure your vehicle's fuel consumption
+3. **Create Trip**: Add route segments with countries and distances
+4. **View Results**: See cost breakdown and AI-powered insights
+5. **Admin Panel**: Export data, view statistics, manage settings
+
+## 🔐 Security
+
+- All routes are protected with Firebase Authentication
+- Firestore security rules ensure users can only access their own data
+- API keys should be stored in environment variables for production
+
+## 📄 License
+
+MIT License - feel free to use this project for your own trips!
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests.
+
+## 📧 Contact
+
+For questions or support, please open an issue on GitHub.
+
+---
+
+**Happy Travels! 🌍✈️🚗**
