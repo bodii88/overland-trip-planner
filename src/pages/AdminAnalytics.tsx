@@ -11,7 +11,8 @@ import {
     RefreshCw,
     Download,
     FileJson,
-    Filter
+    Filter,
+    PieChart
 } from 'lucide-react';
 import {
     getAllUsersTrips,
@@ -27,6 +28,7 @@ import {
     filterTripsByCostRange,
     sortTrips
 } from '../utils/analyticsExport';
+import { AnalyticsCharts } from '../components/AnalyticsCharts';
 
 export const AdminAnalytics: React.FC = () => {
     const [allTrips, setAllTrips] = useState<UserTripData[]>([]);
@@ -39,6 +41,7 @@ export const AdminAnalytics: React.FC = () => {
     const [maxCost, setMaxCost] = useState<number | null>(null);
     const [sortBy, setSortBy] = useState<'name' | 'distance' | 'cost' | 'date'>('date');
     const [showFilters, setShowFilters] = useState(false);
+    const [showCharts, setShowCharts] = useState(true);
 
     const loadData = async () => {
         setLoading(true);
@@ -73,8 +76,8 @@ export const AdminAnalytics: React.FC = () => {
         return filtered;
     }, [allTrips, countryFilter, minCost, maxCost, sortBy]);
 
-    const stats = calculateTripStatistics(allTrips);
-    const popularRoutes = getPopularRoutes(allTrips);
+    const stats = calculateTripStatistics(filteredTrips); // Use filtered trips for stats
+    const popularRoutes = getPopularRoutes(filteredTrips);
     const topRoutes = Array.from(popularRoutes.entries()).slice(0, 5);
 
     if (loading) {
@@ -145,12 +148,21 @@ export const AdminAnalytics: React.FC = () => {
                             <Filter size={18} className="text-purple-400" />
                             Filters
                         </h3>
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="text-sm text-purple-400 hover:text-purple-300"
-                        >
-                            {showFilters ? 'Hide' : 'Show'}
-                        </button>
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setShowCharts(!showCharts)}
+                                className={`text-sm px-3 py-1 rounded-lg transition-colors ${showCharts ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300'}`}
+                            >
+                                <PieChart size={16} className="inline mr-1" />
+                                Charts
+                            </button>
+                            <button
+                                onClick={() => setShowFilters(!showFilters)}
+                                className="text-sm text-purple-400 hover:text-purple-300"
+                            >
+                                {showFilters ? 'Hide' : 'Show'}
+                            </button>
+                        </div>
                     </div>
 
                     {showFilters && (
@@ -239,6 +251,11 @@ export const AdminAnalytics: React.FC = () => {
                 </div>
             </div>
 
+            {/* Charts Section */}
+            {showCharts && filteredTrips.length > 0 && (
+                <AnalyticsCharts trips={filteredTrips} />
+            )}
+
             {/* Averages */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
@@ -287,17 +304,17 @@ export const AdminAnalytics: React.FC = () => {
             <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
                 <div className="flex items-center gap-3 mb-4">
                     <Eye size={20} className="text-blue-400" />
-                    <h3 className="text-lg font-semibold text-white">All Trips ({allTrips.length})</h3>
+                    <h3 className="text-lg font-semibold text-white">All Trips ({filteredTrips.length})</h3>
                 </div>
 
-                {allTrips.length === 0 ? (
+                {filteredTrips.length === 0 ? (
                     <div className="text-center py-8 text-gray-400">
                         <MapPin size={48} className="mx-auto mb-3 opacity-50" />
                         <p>No trips found</p>
                     </div>
                 ) : (
                     <div className="space-y-3 max-h-96 overflow-y-auto">
-                        {allTrips.map((tripData, index) => (
+                        {filteredTrips.map((tripData, index) => (
                             <div
                                 key={index}
                                 className="p-4 bg-gray-700/50 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer"
