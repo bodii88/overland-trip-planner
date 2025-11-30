@@ -143,6 +143,18 @@ export const Admin: React.FC = () => {
                 </div>
             </div>
 
+            {/* Analytics Button */}
+            <button
+                onClick={() => navigate('/admin/analytics')}
+                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold py-4 rounded-xl transition-colors flex items-center justify-center gap-3 mb-6 shadow-lg"
+            >
+                <BarChart3 size={24} />
+                <div className="text-left">
+                    <div className="font-bold">View Trip Analytics</div>
+                    <div className="text-sm opacity-90">Research & observation dashboard</div>
+                </div>
+            </button>
+
             {/* Message */}
             {exportMessage && (
                 <div className="bg-blue-500/10 border border-blue-500/50 rounded-lg p-3 mb-6">

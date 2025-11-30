@@ -11,6 +11,7 @@ import { Results } from './pages/Results';
 import { Vehicles } from './pages/Vehicles';
 import { Settings } from './pages/Settings';
 import { Admin } from './pages/Admin';
+import { AdminAnalytics } from './pages/AdminAnalytics';
 import { needsMigration, migrateFromLocalStorage } from './utils/firebaseStorage';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
               <Route path="/vehicles" element={<Vehicles />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/admin/analytics" element={<AdminAnalytics />} />
             </Route>
 
             {/* Catch all - redirect to home */}
@@ -51,3 +53,4 @@ function App() {
 }
 
 export default App;
+
