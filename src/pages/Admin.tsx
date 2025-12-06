@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useData } from '../contexts/DataContext';
 import { storage } from '../utils/storage';
+import { clearFirebaseCache } from '../utils/clearFirebaseCache';
 import {
     Shield,
     Download,
@@ -10,7 +11,8 @@ import {
     User,
     Database,
     BarChart3,
-    LogOut
+    LogOut,
+    RefreshCw
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -190,6 +192,15 @@ export const Admin: React.FC = () => {
                             className="hidden"
                         />
                     </label>
+
+                    {/* Clear Firebase Cache */}
+                    <button
+                        onClick={clearFirebaseCache}
+                        className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+                    >
+                        <RefreshCw size={20} />
+                        <span>Clear Firebase Cache (Fix Sync Issues)</span>
+                    </button>
 
                     {/* Clear All */}
                     <button
