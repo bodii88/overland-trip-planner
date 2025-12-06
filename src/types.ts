@@ -15,6 +15,8 @@ export interface Stay {
     id: string;
     countryCode: string;     // ISO code like "KW", "SA", "OM"
     cityOrArea: string;
+    lat?: number;
+    lng?: number;
     nights: number;
     stayType: StayType;
     costPerNight?: number;   // if not provided, use defaults from settings or external data
