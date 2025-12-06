@@ -1,22 +1,22 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
+import { getAnalytics } from 'firebase/analytics';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB9tn3okOIxc3iA6-o6eYSon4YwFIduF-M",
-    authDomain: "trip-project1988.firebaseapp.com",
-    projectId: "trip-project1988",
-    storageBucket: "trip-project1988.firebasestorage.app",
-    messagingSenderId: "99072322416",
-    appId: "1:99072322416:web:9fb66daeabbc5dbe547db5",
-    measurementId: "G-06PMZ2C6K6"
+    apiKey: "AIzaSyDCrgmmNwA3tZYT3Tk4HzbndmmYTzyv15U",
+    authDomain: "overland-6df3e.firebaseapp.com",
+    projectId: "overland-6df3e",
+    storageBucket: "overland-6df3e.firebasestorage.app",
+    messagingSenderId: "439828272968",
+    appId: "1:439828272968:web:48e8459baf1f175944057d",
+    measurementId: "G-L7GKX7CP93"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore
+// Initialize Services
 export const db = getFirestore(app);
-
-// Initialize Auth
 export const auth = getAuth(app);
+export const analytics = getAnalytics(app);
