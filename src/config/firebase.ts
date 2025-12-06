@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
+import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { getAnalytics } from 'firebase/analytics';
 
@@ -16,12 +16,13 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with settings to prevent offline issues
-export const db = initializeFirestore(app, {
-    cacheSizeBytes: CACHE_SIZE_UNLIMITED,
-    // Disable offline persistence to prevent sync issues
-    localCache: undefined
-});
+// Initialize Firestore - use default (which has persistence enabled)
+// But we'll handle it properly
+export const db = getFirestore(app);
+
+// Disable persistence to prevent offline issues
+// This is a workaround - we're not enabling it at all
+// The default behavior without calling enableIndexedDbPersistence is memory-only cache
 
 export const auth = getAuth(app);
 export const analytics = getAnalytics(app);
