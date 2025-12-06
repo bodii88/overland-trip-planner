@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CurrencyProvider } from './contexts/CurrencyContext';
@@ -12,18 +11,8 @@ import { Vehicles } from './pages/Vehicles';
 import { Settings } from './pages/Settings';
 import { Admin } from './pages/Admin';
 import { AdminAnalytics } from './pages/AdminAnalytics';
-import { needsMigration, migrateFromLocalStorage } from './utils/firebaseStorage';
 
 function App() {
-  useEffect(() => {
-    // Migrate data from localStorage to Firebase on first load
-    if (needsMigration()) {
-      migrateFromLocalStorage().then(() => {
-        console.log('✅ Data migrated to Firebase! Your data will now sync across devices.');
-      });
-    }
-  }, []);
-
   return (
     <AuthProvider>
       <CurrencyProvider>
