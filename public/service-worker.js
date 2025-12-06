@@ -39,25 +39,12 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Network first strategy for API calls
-    if (event.request.url.includes('/api/') || event.request.url.includes('firestore') || event.request.url.includes('googleapis')) {
-        event.respondWith(
-            fetch(event.request)
-                .then((response) => {
-                    // Clone and cache successful responses
-                    if (response && response.status === 200) {
-                        const responseClone = response.clone();
-                        caches.open(RUNTIME_CACHE).then((cache) => {
-                            cache.put(event.request, responseClone);
-                        });
-                    }
-                    return response;
-                })
-                .catch(() => {
-                    // Fallback to cache if network fails
-                    return caches.match(event.request);
-                })
-        );
+    // Network-only strategy for Firebase/Firestore - NEVER cache to prevent offline issues
+    if (event.request.url.includes('/api/') ||
+        event.request.url.includes('firestore') ||
+        event.request.url.includes('googleapis') ||
+        event.request.url.includes('firebase')) {
+        event.respondWith(fetch(event.request));
         return;
     }
 
