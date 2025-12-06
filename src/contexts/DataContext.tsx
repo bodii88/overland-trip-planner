@@ -30,20 +30,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         setLoading(true);
 
-        // Subscriptions
+        // Subscriptions - also update storage cache for backward compatibility
         const unsubTrips = firebaseStorage.subscribeToTrips(user.uid, (data) => {
             setTrips(data);
-            // Also update the legacy storage cache if needed
-            // (though ideally we stop using storage.getTrips in components)
+            console.log('📦 Trips updated from Firebase:', data.length);
         });
 
         const unsubVehicles = firebaseStorage.subscribeToVehicles(user.uid, (data) => {
             setVehicles(data);
+            console.log('🚗 Vehicles updated from Firebase:', data.length);
         });
 
         const unsubSettings = firebaseStorage.subscribeToSettings(user.uid, (data) => {
             setSettings(data);
             setLoading(false);
+            console.log('⚙️ Settings updated from Firebase');
         });
 
         return () => {

@@ -85,8 +85,11 @@ export const storage = {
         return vehiclesCache;
     },
     saveVehicles: (vehicles: Vehicle[]) => {
+        console.log(`🔄 Storage: Saving ${vehicles.length} vehicles, userId: ${currentUserId?.slice(0, 8) || 'NONE'}`);
         vehiclesCache = vehicles;
-        firebaseStorage.saveVehicles(currentUserId, vehicles).catch(console.error);
+        firebaseStorage.saveVehicles(currentUserId, vehicles).catch((error) => {
+            console.error('❌ Failed to save vehicles:', error);
+        });
     },
     getSettings: (): Settings => {
         return settingsCache;

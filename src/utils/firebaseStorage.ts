@@ -53,11 +53,16 @@ export function subscribeToTrips(userId: string | undefined, callback: (trips: T
 // ==================== VEHICLES ====================
 
 export async function saveVehicles(userId: string | undefined, vehicles: Vehicle[]): Promise<void> {
-    if (!userId) return;
+    if (!userId) {
+        console.error('❌ Cannot save vehicles: No user ID');
+        return;
+    }
+    console.log(`💾 Saving ${vehicles.length} vehicles for user ${userId.slice(0, 8)}...`);
     const batch = vehicles.map(vehicle =>
         setDoc(doc(db, USERS_COLLECTION, userId, 'vehicles', vehicle.id), vehicle)
     );
     await Promise.all(batch);
+    console.log(`✅ Successfully saved ${vehicles.length} vehicles`);
 }
 
 export async function saveVehicle(userId: string, vehicle: Vehicle): Promise<void> {
