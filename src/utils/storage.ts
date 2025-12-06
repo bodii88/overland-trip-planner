@@ -1,5 +1,6 @@
 import type { Trip, Vehicle, Settings } from '../types';
 import * as firebaseStorage from './firebaseStorage';
+import { type Unsubscribe } from 'firebase/firestore';
 
 const DEFAULT_SETTINGS: Settings = {
     baseCurrency: 'KWD',
@@ -18,36 +19,80 @@ let tripsCache: Trip[] = [];
 let vehiclesCache: Vehicle[] = [];
 let settingsCache: Settings = DEFAULT_SETTINGS;
 
-// Initialize caches from Firebase
-firebaseStorage.getTrips().then(trips => { tripsCache = trips; });
-firebaseStorage.getVehicles().then(vehicles => { vehiclesCache = vehicles; });
-firebaseStorage.getSettings().then(settings => { settingsCache = settings; });
+let currentUserId: string | undefined = undefined;
 
-// Subscribe to real-time updates
-firebaseStorage.subscribeToTrips(trips => { tripsCache = trips; });
-firebaseStorage.subscribeToVehicles(vehicles => { vehiclesCache = vehicles; });
-firebaseStorage.subscribeToSettings(settings => { settingsCache = settings; });
+// Subscription cleanup functions
+let unsubTrips: Unsubscribe | undefined;
+let unsubVehicles: Unsubscribe | undefined;
+let unsubSettings: Unsubscribe | undefined;
+
+function cleanupSubscriptions() {
+    if (unsubTrips) unsubTrips();
+    if (unsubVehicles) unsubVehicles();
+    if (unsubSettings) unsubSettings();
+    unsubTrips = undefined;
+    unsubVehicles = undefined;
+    unsubSettings = undefined;
+}
+
+function initializeSubscriptions(userId: string) {
+    cleanupSubscriptions();
+
+    // Initial fetch
+    firebaseStorage.getTrips(userId).then(trips => { tripsCache = trips; });
+    firebaseStorage.getVehicles(userId).then(vehicles => { vehiclesCache = vehicles; });
+    firebaseStorage.getSettings(userId).then(settings => { settingsCache = settings; });
+
+    // Subscriptions
+    unsubTrips = firebaseStorage.subscribeToTrips(userId, trips => { tripsCache = trips; });
+    unsubVehicles = firebaseStorage.subscribeToVehicles(userId, vehicles => { vehiclesCache = vehicles; });
+    unsubSettings = firebaseStorage.subscribeToSettings(userId, settings => { settingsCache = settings; });
+
+    // Migration Check
+    if (firebaseStorage.needsMigration(userId)) {
+        console.log("Migration needed for user:", userId);
+        firebaseStorage.migrateFromLocalStorage(userId);
+    }
+}
 
 export const storage = {
+    setUserId: (userId: string | null) => {
+        // If logging out or switching to null
+        if (!userId) {
+            currentUserId = undefined;
+            cleanupSubscriptions();
+            tripsCache = [];
+            vehiclesCache = [];
+            settingsCache = DEFAULT_SETTINGS;
+            return;
+        }
+
+        // If logging in or switching user
+        if (currentUserId !== userId) {
+            currentUserId = userId;
+            initializeSubscriptions(userId);
+        }
+    },
+
     getTrips: (): Trip[] => {
         return tripsCache;
     },
     saveTrips: (trips: Trip[]) => {
         tripsCache = trips;
-        firebaseStorage.saveTrips(trips).catch(console.error);
+        firebaseStorage.saveTrips(currentUserId, trips).catch(console.error);
     },
     getVehicles: (): Vehicle[] => {
         return vehiclesCache;
     },
     saveVehicles: (vehicles: Vehicle[]) => {
         vehiclesCache = vehicles;
-        firebaseStorage.saveVehicles(vehicles).catch(console.error);
+        firebaseStorage.saveVehicles(currentUserId, vehicles).catch(console.error);
     },
     getSettings: (): Settings => {
         return settingsCache;
     },
     saveSettings: (settings: Settings) => {
         settingsCache = settings;
-        firebaseStorage.saveSettings(settings).catch(console.error);
+        firebaseStorage.saveSettings(currentUserId, settings).catch(console.error);
     },
 };

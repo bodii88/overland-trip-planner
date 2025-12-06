@@ -10,6 +10,8 @@ import {
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
+import { storage } from '../utils/storage';
+
 interface AuthContextType {
     user: User | null;
     loading: boolean;
@@ -28,6 +30,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             setUser(user);
+            // Update storage user ID to trigger data sync/migration
+            storage.setUserId(user ? user.uid : null);
             setLoading(false);
         });
 
