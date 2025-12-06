@@ -75,6 +75,10 @@ export const Layout: React.FC = () => {
                         <Settings size={24} />
                         <span className="text-xs mt-1">Settings</span>
                     </NavLink>
+                    <NavLink to="/admin" className={({ isActive }) => clsx("flex flex-col items-center p-2", isActive ? "text-purple-400" : "text-gray-400")}>
+                        <Shield size={24} />
+                        <span className="text-xs mt-1">Admin</span>
+                    </NavLink>
                 </div>
             </nav>
         </div>
