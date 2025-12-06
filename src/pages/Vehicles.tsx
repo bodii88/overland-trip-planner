@@ -1,17 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { Vehicle } from '../types';
 import { storage } from '../utils/storage';
+import { useData } from '../contexts/DataContext';
 import { v4 as uuidv4 } from 'uuid';
 import { Plus, Trash2, Edit2 } from 'lucide-react';
 
 export const Vehicles: React.FC = () => {
-    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const { vehicles } = useData();
     const [isEditing, setIsEditing] = useState(false);
     const [currentVehicle, setCurrentVehicle] = useState<Partial<Vehicle>>({});
-
-    useEffect(() => {
-        setVehicles(storage.getVehicles());
-    }, []);
 
     const handleSave = () => {
         if (!currentVehicle.name || !currentVehicle.consumption) return;
@@ -33,7 +30,6 @@ export const Vehicles: React.FC = () => {
             updatedVehicles = [...vehicles, newVehicle];
         }
 
-        setVehicles(updatedVehicles);
         storage.saveVehicles(updatedVehicles);
         setIsEditing(false);
         setCurrentVehicle({});
@@ -41,7 +37,6 @@ export const Vehicles: React.FC = () => {
 
     const handleDelete = (id: string) => {
         const updated = vehicles.filter(v => v.id !== id);
-        setVehicles(updated);
         storage.saveVehicles(updated);
     };
 

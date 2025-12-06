@@ -12,31 +12,35 @@ import { Settings } from './pages/Settings';
 import { Admin } from './pages/Admin';
 import { AdminAnalytics } from './pages/AdminAnalytics';
 
+import { DataProvider } from './contexts/DataContext';
+
 function App() {
   return (
     <AuthProvider>
-      <CurrencyProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Route */}
-            <Route path="/login" element={<Login />} />
+      <DataProvider>
+        <CurrencyProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Public Route */}
+              <Route path="/login" element={<Login />} />
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-              <Route path="/" element={<Trips />} />
-              <Route path="/trip/:id" element={<TripBuilder />} />
-              <Route path="/results/:id" element={<Results />} />
-              <Route path="/vehicles" element={<Vehicles />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/analytics" element={<AdminAnalytics />} />
-            </Route>
+              {/* Protected Routes */}
+              <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route path="/" element={<Trips />} />
+                <Route path="/trip/:id" element={<TripBuilder />} />
+                <Route path="/results/:id" element={<Results />} />
+                <Route path="/vehicles" element={<Vehicles />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/analytics" element={<AdminAnalytics />} />
+              </Route>
 
-            {/* Catch all - redirect to home */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </CurrencyProvider>
+              {/* Catch all - redirect to home */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </CurrencyProvider>
+      </DataProvider>
     </AuthProvider>
   );
 }

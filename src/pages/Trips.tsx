@@ -1,27 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import type { Trip } from '../types';
+import { useData } from '../contexts/DataContext';
 import { storage } from '../utils/storage';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, ChevronRight, MapPin } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
 export const Trips: React.FC = () => {
-    const [trips, setTrips] = useState<Trip[]>([]);
+    const { trips, vehicles, settings } = useData();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        setTrips(storage.getTrips());
-    }, []);
-
     const createNewTrip = () => {
-        const vehicles = storage.getVehicles();
         if (vehicles.length === 0) {
             alert('Please add a vehicle first!');
             navigate('/vehicles');
             return;
         }
 
-        const settings = storage.getSettings();
         const newTrip: Trip = {
             id: uuidv4(),
             name: 'New Trip',

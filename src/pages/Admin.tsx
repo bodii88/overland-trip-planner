@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useData } from '../contexts/DataContext';
 import { storage } from '../utils/storage';
 import {
     Shield,
@@ -18,9 +19,8 @@ export const Admin: React.FC = () => {
     const navigate = useNavigate();
     const [exportMessage, setExportMessage] = useState('');
 
-    const trips = storage.getTrips();
-    const vehicles = storage.getVehicles();
-    const settings = storage.getSettings();
+    // Use reactive data from context
+    const { trips, vehicles, settings } = useData();
 
     const handleExportData = () => {
         const data = {
